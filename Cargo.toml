@@ -1,0 +1,4 @@
+[package]
+name = "igors_hashmap"
+version = "0.0.1"
+authors = ["xenzh <xenzh0@gmail.com>"]
