@@ -2,6 +2,7 @@
 
 #![feature(libc)]
 #![feature(hash)]
+#![feature(step_by)]
 
 extern crate libc;
 
@@ -10,7 +11,6 @@ use std::mem;
 use std::hash::{ hash, Hash, SipHasher };
 
 
-#[derive(Clone, Copy)]
 struct Node<K: Hash + Eq + Clone, V: Eq + Clone> {
     key: K,
     value: V,
@@ -117,8 +117,7 @@ fn main() {
     println!("\ntest #2 - collision resolving and mem leaks");
     {
         let mut igors_hash2 = HashMap::new();
-        for test_key in 0..10 {
-            if test_key % 2 == 0 { continue; }
+        for test_key in (0..10).step_by(2) {
             igors_hash2.insert(&test_key, &(test_key * 10));
             igors_hash2.insert(&(test_key + HASHTABLE_SIZE as i32), &(test_key * 100));
         }
@@ -145,8 +144,8 @@ fn main() {
         let meanings = [ "Name".to_string(),
             "Last name".to_string(), "Second name".to_string() ];
 
-        for item in 0..names.len() {
-            igors_hash3.insert(&names[item], &meanings[item]);
+        for item_idx in 0..names.len() {
+            igors_hash3.insert(&names[item_idx], &meanings[item_idx]);
         }
         
         let found = igors_hash3.find(&"Ihor".to_string());
