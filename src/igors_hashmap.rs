@@ -6,6 +6,7 @@ use std::ptr;
 use std::mem;
 use std::hash::{ hash, Hash, SipHasher };
 
+// =======================================================================================
 
 struct Node<K: Hash + Eq + Clone, V: Eq + Clone> {
     key: K,
@@ -13,10 +14,12 @@ struct Node<K: Hash + Eq + Clone, V: Eq + Clone> {
     next: *mut Node<K, V>,
 }
 
+
 const HASHTABLE_SIZE: usize = 1024;
 pub struct HashMap<K: Hash + Eq + Clone, V: Eq + Clone> {
     ht: Vec<*mut Node<K, V>>,
 }
+
 
 impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
     pub fn new() -> HashMap<K, V> {
@@ -84,6 +87,7 @@ impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
     }
 }
 
+
 impl<K: Hash + Eq + Clone, V: Eq + Clone> Drop for HashMap<K, V> {
     fn drop(&mut self) {
         for bucket in self.ht.iter() {
@@ -93,3 +97,16 @@ impl<K: Hash + Eq + Clone, V: Eq + Clone> Drop for HashMap<K, V> {
         }
     }
 }
+
+// =======================================================================================
+
+struct HashMapIterator<K: Hash + Eq + Clone, V: Eq + Clone> {
+    pub noopk: K,
+    pub noopv: V,
+}
+
+// impl<K: Hash + Eq + Clone, V: Eq + Clone> Iterator for HashMapIterator<K, V> {
+//     pub fn next(&mut self) ->Option<<Self as Iterator>::Item> {
+//         None
+//     }
+// }
