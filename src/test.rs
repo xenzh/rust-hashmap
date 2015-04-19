@@ -15,7 +15,21 @@ pub fn simple_int_pair_insertion() {
 }
 
 #[test]
-pub fn collision_handling() {
+pub fn simple_int_pair_removal() {
+    let mut igors_hash1 = igors_hashmap::HashMap::new();
+    igors_hash1.insert(&42, &42);
+
+    let found = igors_hash1.find(&42);
+    assert_eq!(found.is_some(), true);
+    assert_eq!(found.unwrap(), 42);
+
+    igors_hash1.remove(&42);
+    let found = igors_hash1.find(&42);
+    assert_eq!(found.is_some(), false);
+}
+
+#[test]
+pub fn int_pair_collision_handling() {
     let mut igors_hash2 = igors_hashmap::HashMap::new();
     for test_key in (0..10).step_by(2) {
         igors_hash2.insert(&test_key, &(test_key * 10));

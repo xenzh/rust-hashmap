@@ -6,7 +6,6 @@
 
 mod igors_hashmap;
 
-
 #[cfg(test)]
 mod test;
 

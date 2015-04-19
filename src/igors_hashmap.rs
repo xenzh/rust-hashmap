@@ -19,21 +19,24 @@ pub struct HashMap<K: Hash + Eq + Clone, V: Eq + Clone> {
 }
 
 impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
-    pub fn new() -> HashMap<K, V> {
-        HashMap { ht: vec![ptr::null_mut(); HASHTABLE_SIZE] }
-    }
 
     unsafe fn drop_node(node_ptr: *mut Node<K, V>) {
         if !(*node_ptr).next.is_null() {
             HashMap::drop_node((*node_ptr).next);
         }
 
-        ptr::read(node_ptr as *mut Node<K, V>);
+        ptr::read(node_ptr as *mut Node<K, V>); // copy object to stack to invoke d-tor
         libc::free(node_ptr as *mut libc::c_void);           
     }
 
     fn get_hash<T: Hash>(value: &T) -> usize {
         (hash::<T, SipHasher>(value) % HASHTABLE_SIZE as u64) as usize
+    }
+
+    // pub ===================================================================
+
+    pub fn new() -> HashMap<K, V> {
+        HashMap { ht: vec![ptr::null_mut(); HASHTABLE_SIZE] }
     }
 
     pub fn insert(&mut self, key: &K, value: &V) -> bool {
@@ -66,6 +69,30 @@ impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
                 (*node_ptr).next = new_node;
             }
             true
+        }
+    }
+
+    pub fn remove(&self, key: &K) {
+        let hash = HashMap::<K, V>::get_hash(key);
+        unsafe {
+            let mut prev_node_ptr = ptr::null_mut();
+            let mut node_ptr = self.ht[hash];
+
+            while !node_ptr.is_null() {
+                if (*node_ptr).key == *key {
+                    break;
+                }
+                prev_node_ptr = node_ptr;
+                node_ptr = (*node_ptr).next;
+            }
+
+            // 1. if head and the only - remove only it, link table to nullptr.
+            // 4. if the last - remove it, link prev to nullptr
+
+            // 2. if head and not the only - remove it, link table to next.
+            // 3. if middle - remove it, link prev to next
+
+            unimplemented!();
         }
     }
 
