@@ -72,7 +72,7 @@ impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
         }
     }
 
-    pub fn remove(&self, key: &K) {
+    pub fn remove(&mut self, key: &K) {
         let hash = HashMap::<K, V>::get_hash(key);
         unsafe {
             let mut prev_node_ptr = ptr::null_mut();
@@ -86,13 +86,38 @@ impl<K: Hash + Eq + Clone, V: Eq + Clone> HashMap<K, V> {
                 node_ptr = (*node_ptr).next;
             }
 
-            // 1. if head and the only - remove only it, link table to nullptr.
-            // 4. if the last - remove it, link prev to nullptr
+            if node_ptr.is_null() {
+                return;
+            }    
 
-            // 2. if head and not the only - remove it, link table to next.
-            // 3. if middle - remove it, link prev to next
+            if prev_node_ptr.is_null() {
+                // if the head and the only
+                // if head and not the only - remove it, link table to next.
+                self.ht[hash] = (*node_ptr).next;
+            } else {
+                // if head and not the only - remove it, link table to next.
+                // if middle - remove it, link prev to next  
+                (*prev_node_ptr).next = (*node_ptr).next;
+            }
 
-            unimplemented!();
+
+/*
+            if prev_node_ptr.is_null() && (*node_ptr).next.is_null() {
+                // if the head and the only
+                self.ht[hash] = ptr::null_mut(); 
+            } else if !prev_node_ptr.is_null() && (*node_ptr).next.is_null() {
+                // if the last - remove it, link prev to nullptr
+                (*prev_node_ptr).next = ptr::null_mut();  
+            } else if prev_node_ptr.is_null() && !(*node_ptr).next.is_null() {
+                // if head and not the only - remove it, link table to next.
+                self.ht[hash] = (*node_ptr).next;
+            } else if !prev_node_ptr.is_null() && !(*node_ptr).next.is_null() {
+                // if middle - remove it, link prev to next
+                (*prev_node_ptr).next = (*node_ptr).next; 
+            }
+*/
+            ptr::read(node_ptr as *mut Node<K, V>);
+            libc::free(node_ptr as *mut libc::c_void);  
         }
     }
 
